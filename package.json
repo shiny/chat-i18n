@@ -1,0 +1,17 @@
+{
+    "name": "chat-i18n",
+    "module": "index.ts",
+    "type": "module",
+    "bin": {
+        "chat-i18n": "./bin.ts"
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "json-diff-ts": "^4.0.1"
+    }
+}
