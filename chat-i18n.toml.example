@@ -1,11 +1,12 @@
+# the locale message directory in your project
+dir = "locales"
+source = "en"
+
 [provider]
 # The name of the provider you are using. Currently, only "deekseek" is supported.
 name = "deekseek"
-# the locale message directory in your project
-locale_messages_dir = "messages/"
-source_locale = "en"
 
 [deekseek]
 # Your Deekseeker API key
-api_key = "sk-**"
+api_key = "sk-**""
 
