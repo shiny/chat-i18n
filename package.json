@@ -1,5 +1,6 @@
 {
     "name": "chat-i18n",
+    "version": "0.0.1",
     "module": "index.ts",
     "type": "module",
     "bin": {
