@@ -25,7 +25,7 @@ name = "deekseek"
 
 [deekseek]
 # Your Deekseeker API key
-api_key = "sk-**""
+api_key = "sk-**"
 ```
 
 ## License
