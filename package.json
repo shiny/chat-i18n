@@ -1,7 +1,7 @@
 {
     "name": "chat-i18n",
     "description": "🤖 cli command to translate locale messages by ai",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "module": "index.ts",
     "homepage": "https://github.com/shiny/chat-i18n",
     "repository": {
