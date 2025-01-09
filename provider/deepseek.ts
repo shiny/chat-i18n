@@ -9,7 +9,11 @@ export default async function deepseek({
     locale: string;
     key: string;
 }) {
-    const text = `你有丰富的软件国际化经验，擅长用地道、本土的语言翻译 locale 文件，目标语种代码为 ${locale}。根据下文，翻译并直接输出 json 格式:\n${JSON.stringify(translateDiffs)}`
+    const text = `You have rich software internationalization experience, you are good at using local and native languages to translate locale files.
+    Rewrite this text in a more natural and fluent way, ensuring it sounds polished and natural, avoiding a literal translation.
+    Translate this into ${locale}, but focus on idiomatic and smooth phrasing rather than a direct word-for-word translation.
+    Accdording to context, make this text sound more polished and native-like by rephrasing it with a focus on clarity and fluency.
+    Output json:\n${JSON.stringify(translateDiffs)}`
 
     const res = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
