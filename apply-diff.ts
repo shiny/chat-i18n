@@ -2,25 +2,23 @@ import type { IChange } from "json-diff-ts";
 
 export default async function applyDiff(diff: IChange[], target: Record<string, any>, translated: Record<string, any>) {
     for (const change of diff) {
+        const key = /^\d+$/.test(change.key) ? Number(change.key) : change.key;
         if (Array.isArray(change.changes)) {
-            if (!target[change.key]) {
-                target[change.key] = {}
+            if (!target[key]) {
+                target[key] = change.embeddedKey === '$index' ? [] : {}
             }
-            target[change.key] = await applyDiff(change.changes, target[change.key], translated[change.key]);
+            target[key] = await applyDiff(change.changes, target[key], translated[key]);
             continue;
-        }
-        if (change.embeddedKey) {
-            throw new Error("Does not support an array");
         }
         switch (change.type) {
             case "REMOVE":
-                delete target[change.key];
+                delete target[key];
                 break;
             case "ADD":
-                target[change.key] = translated[change.key];
+                target[key] = translated[key];
                 break;
             case "UPDATE":
-                target[change.key] = translated[change.key];
+                target[key] = translated[key];
                 break;
         }
     }
