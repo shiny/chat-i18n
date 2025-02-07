@@ -3,6 +3,7 @@ import { Glob } from "bun"
 import { basename } from 'path'
 import getDiff from "./get-diff"
 import queryForDeepseek from "./provider/deepseek"
+import queryForGemini from "./provider/gemini"
 import applyDiff from "./apply-diff"
 import removeRedundantDiff from "./remove-redundant-diff"
 const { default: cfg } = await import(process.cwd() + '/chat-i18n.toml')
@@ -43,6 +44,29 @@ if (!glob.match(sourceFile)) {
     process.exit(1);
 }
 
+const provider = cfg.provider.name
+const providerConfig = cfg[provider]
+
+const provides = {
+    'deekseek': {
+        query: queryForDeepseek,
+        defaultModel: 'deepseek-reasoner'
+    },
+    'gemini': {
+        query: queryForGemini,
+        defaultModel: 'gemini-2.0-flash'
+    }
+}
+const apiKey = providerConfig.api_key
+//@ts-expect-error
+const query = provides[provider].query
+// @ts-expect-error
+const model = providerConfig.model ?? provides[provider].defaultModel
+if (!query) {
+    console.error(`Provider ${provider} not found`);
+    process.exit(1);
+}
+
 if (values.full) {
     console.log("Using full translation")
     const source = await Bun.file(sourceFile).json()
@@ -52,10 +76,11 @@ if (values.full) {
             continue; 
         }
         console.log(`Updating ${localeFile}`)
-        const translated = await queryForDeepseek({
+        const translated = await query({
             translateDiffs: source,
             locale: targetLocale,
-            key: cfg.deekseek.api_key
+            key: apiKey,
+            model
         })
         const file = Bun.file(localeDir + '/' + targetLocale + '.json')
         await Bun.write(file, JSON.stringify(translated, null, 4))
@@ -72,10 +97,11 @@ for await (const localeFile of glob.scan()) {
         continue; 
     }
     console.log(`Updating ${localeFile}`)
-    const translated = await queryForDeepseek({
+    const translated = await query({
         translateDiffs: patchToTranslate,
         locale: targetLocale,
-        key: cfg.deekseek.api_key
+        key: apiKey,
+        model
     })
     const file = Bun.file(localeDir + '/' + targetLocale + '.json')
     const result = await file.json()

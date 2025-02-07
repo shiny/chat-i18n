@@ -8,5 +8,12 @@ name = "deekseek"
 
 [deekseek]
 # Your Deekseeker API key
-api_key = "sk-**""
+api_key = "sk-**"
+# Set model, can be "deepseek-reasoner" or "deepseek-chat"
+# @docs https://api-docs.deepseek.com/zh-cn/guides/reasoning_model
+# deepseek-reasoner is much slower but has better quanlity
+model = "deepseek-reasoner"
 
+[gemini]
+api_key = "**"
+model = "gemini-2.0-flash"
