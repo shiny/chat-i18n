@@ -15,7 +15,7 @@ export default async function deepseek({
     Rewrite this text in a more natural and fluent way, ensuring it sounds polished and natural, avoiding a literal translation.
     Translate this into ${locale}, but focus on idiomatic and smooth phrasing rather than a direct word-for-word translation.
     Accdording to context, make this text sound more polished and native-like by rephrasing it with a focus on clarity and fluency.
-    Output in JSON format, use JSON schema:\n${JSON.stringify(translateDiffs)}`
+    Output in JSON Object format not array. Do not change the input JSON format, order, or structure.Preserve next-intl syntax.use JSON schema:\n${JSON.stringify(translateDiffs)}`
 
     const config = {
         "contents": [
