@@ -20,6 +20,11 @@ const { values } = parseArgs({
         type: 'boolean',
         alias: 'h',
         default: false,
+    },
+    target: {
+        type: 'string',
+        alias: 't',
+        default: '',
     }
   },
   strict: true,
@@ -29,6 +34,7 @@ const { values } = parseArgs({
 if (values.help) {
     console.log(`Usage: ${Bun.argv[0]} [options]`)
     console.log(`Options:`)
+    console.log(`  --target  Target locale to translate (default: all)`)
     console.log(`  --full    use full translation (default: false)`)
     console.log(`  --help    Show this help message`)
     process.exit(0)
@@ -66,7 +72,6 @@ if (!query) {
     console.error(`Provider ${provider} not found`);
     process.exit(1);
 }
-
 if (values.full) {
     console.log("Using full translation")
     const source = await Bun.file(sourceFile).json()
@@ -74,6 +79,9 @@ if (values.full) {
         const targetLocale = basename(localeFile, '.json')
         if (targetLocale === cfg.source) {
             continue; 
+        }
+        if (values.target && targetLocale !== values.target) {
+            continue;
         }
         console.log(`Updating ${localeFile}`)
         const translated = await query({
@@ -91,10 +99,21 @@ if (values.full) {
 const diffs = await getDiff(sourceFile)
 const patchToTranslate = removeRedundantDiff(diffs)
 
-for await (const localeFile of glob.scan()) {
+const localeFilesToTranslate = await Array.fromAsync(glob.scan())
+const results = await Promise.allSettled(localeFilesToTranslate.map(localeFile => translate(localeFile)))
+results.forEach(result => {
+    if (result.status === 'rejected') {
+        console.error(result.reason)
+    }
+})
+
+async function translate(localeFile: string) {
     const targetLocale = basename(localeFile, '.json')
     if (targetLocale === cfg.source) {
-        continue; 
+        return; 
+    }
+    if (values.target && targetLocale !== values.target) {
+        return;
     }
     console.log(`Updating ${localeFile}`)
     const translated = await query({
@@ -107,4 +126,5 @@ for await (const localeFile of glob.scan()) {
     const result = await file.json()
     const finalResult = await applyDiff(diffs, result, translated)
     await Bun.write(file, JSON.stringify(finalResult, null, 4))
+
 }
